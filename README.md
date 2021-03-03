@@ -1,4 +1,4 @@
-# hello-world
+# Vue Blog - GraphQL
 
 ## Project setup
 ```
