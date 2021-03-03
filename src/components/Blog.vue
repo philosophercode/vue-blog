@@ -17,7 +17,7 @@
 
 <script>
 import { mdToHtml, dateFormat } from "@/utils";
-import { getPost } from "@/services";
+import { getPosts } from "@/services";
 export default {
   name: "Blog",
   data: () => ({
@@ -37,10 +37,10 @@ export default {
   methods: {
     mdToHtml,
     dateFormat,
-    getPost,
+    getPosts,
     async getBlog(id) {
       this.loading = true;
-      this.post = await this.getPost(id);
+      this.post = await this.getPosts(id);
 
       // Post are fetched as Markdown but can be edited as MD or Rich Text
       // Make sure your endpoint is secure as `showdown` (the MD parser)
