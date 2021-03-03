@@ -17,6 +17,7 @@
 
 <script>
 import { mdToHtml, dateFormat } from "@/utils";
+import { getPost } from "@/services";
 export default {
   name: "Blog",
   data: () => ({
@@ -27,7 +28,7 @@ export default {
   }),
   created() {
     const fetchedId = this.$route.params.id;
-    this.getPost(fetchedId);
+    this.getBlog(fetchedId);
   },
   watch: {
     // call again the method if the route changes
@@ -36,36 +37,17 @@ export default {
   methods: {
     mdToHtml,
     dateFormat,
-    async getPost(id) {
+    getPost,
+    async getBlog(id) {
       this.loading = true;
-      const res = await fetch(
-        `https://api-eu-central-1.graphcms.com/v2/ckc31lc3t00s501z63ch5f5o1/master`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            query: `
-              {
-                posts(where: { id: "${id}" }) {
-                  title
-                  date
-                  author {
-                    name
-                  }
-                  content {
-                    markdown
-                  }
-                  body
-                }
-              }
-            `,
-          }),
-        }
-      );
-      const { data } = await res.json();
-      this.loading = false;
-      this.post = data?.posts[0];
+      this.post = await this.getPost(id);
+
+      // Post are fetched as Markdown but can be edited as MD or Rich Text
+      // Make sure your endpoint is secure as `showdown` (the MD parser)
+      // does not sanitize the markdown leaving the possibility of XSS
+      // alternately sanitize the rendered HTML
       this.content = mdToHtml(this.post.body ?? this.post.content.markdown);
+      this.loading = false;
     },
   },
 };

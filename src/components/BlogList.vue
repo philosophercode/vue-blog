@@ -33,6 +33,7 @@
 
 <script>
 import { dateFormat } from "@/utils";
+import { getPosts } from "@/services";
 export default {
   name: "BlogList",
   data: () => ({
@@ -41,40 +42,16 @@ export default {
     error: null,
   }),
   created() {
-    this.getPosts();
+    this.getBlogs();
   },
   methods: {
     dateFormat,
-    async getPosts() {
+    getPosts,
+    // For faster performance and SEO look into SSR / SSG like Nuxt.js or VuePress
+    async getBlogs() {
       this.loading = true;
-      const res = await fetch(
-        `https://api-eu-central-1.graphcms.com/v2/ckc31lc3t00s501z63ch5f5o1/master`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            query: `
-              {
-                posts {
-                  title
-                  date
-                  author {
-                    name
-                  }
-                  coverImage {
-                    url
-                  }
-                  slug
-                  id
-                }
-              }
-            `,
-          }),
-        }
-      );
-      const { data } = await res.json();
+      this.posts = await this.getPosts();
       this.loading = false;
-      this.posts = data.posts;
     },
   },
 };
